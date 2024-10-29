@@ -11,8 +11,9 @@ import os, sys
 
 
 #Energy Minimization Stage 1
-%%file min0.in
-Type of Simulation Being Done: Energy Minimization, Stage1, RESTRAINING ALL HEAVY ATOMS EXCEPT WATER AND IONS,
+with open("min0.in", "w") as file:
+    file.write(
+"""Type of Simulation Being Done: Energy Minimization, Stage1, RESTRAINING ALL HEAVY ATOMS EXCEPT WATER AND IONS,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
@@ -31,15 +32,16 @@ Type of Simulation Being Done: Energy Minimization, Stage1, RESTRAINING ALL HEAV
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="!(@H=|:WAT|@Na+|@Cl-)", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=25.00, !Force Constant for Restraint, kcal/(mol * A^2)
-()
+  """)
 
 
 # In[ ]:
 
 
 #Energy Minimization Stage 2
-%%file min1.in
-Type of Simulation Being Done: Energy Minimization, Stage2
+with open("min1.in", "w") as file:
+    file.write(
+"""Type of Simulation Being Done: Energy Minimization, Stage2
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
@@ -58,15 +60,16 @@ Type of Simulation Being Done: Energy Minimization, Stage2
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@N,CA,C,O", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=10.00, !Force Constant for Restraint, kcal/(mol * A^2)
-()
+""")
 
 
 # In[ ]:
 
 
 #Energy Minimization Stage 3
-%%file min1.in
-Type of Simulation Being Done: Energy Minimization, Stage3
+with open("min2.in", "w") as file:
+    file.write(
+"""Type of Simulation Being Done: Energy Minimization, Stage3
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
@@ -85,16 +88,13 @@ Type of Simulation Being Done: Energy Minimization, Stage3
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@CA", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=5.00, !Force Constant for Restraint, kcal/(mol * A^2)
-()
-
-
-# In[6]:
-
+""")
 
 #Heating Stage
 
-%%file heat.in
-Type of Simulation Being Done: Heating,
+with open("heat.in", "w") as file:
+    file.write(
+"""Type of Simulation Being Done: Heating,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=0, !MD Simulation
@@ -121,10 +121,7 @@ Type of Simulation Being Done: Heating,
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@CA", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=5.00, !Force Constant for Restraint, kcal/(mol * A^2)
-()
-
-
-# In[5]:
+""")
 
 
 init_step = 0
@@ -160,13 +157,11 @@ merge_file = "cat " + heat_in + " " + topfile + " > heating.in"
 os.system(merge_file)
 
 
-# In[ ]:
-
-
 # NVT Equilibration
 
-%%file equi_NVT.in
-Type of Simulation Being Done: NVT Equilibration,
+with open("equi_NVT.in", "w") as file:
+    file.write(
+"""Type of Simulation Being Done: NVT Equilibration,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=0, !MD Simulation
@@ -193,16 +188,13 @@ Type of Simulation Being Done: NVT Equilibration,
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@CA", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=2.00, !Force Constant for Restraint, kcal/(mol * A^2)
- ()
-
-
-# In[ ]:
-
+ """)
 
 # NPT Equilibration
 
-%%file equi_NPT.in
-Type of Simulation Being Done: NPT Equilibration,
+with open("equi_NPT.in", "w") as file:
+    file.write(
+"""Type of Simulation Being Done: NPT Equilibration,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=0, !MD Simulation
@@ -230,15 +222,12 @@ Type of Simulation Being Done: NPT Equilibration,
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@CA", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=2.00, !Force Constant for Restraint, kcal/(mol * A^2)
- ()
-
-
-# In[ ]:
-
+""")
 
 # Production Run
-%%file md_NPT.in
-Type of Simulation Being Done: Production Run,
+with open("md_NPT.in", "w") as file:
+    file.write(
+"""Type of Simulation Being Done: Production Run,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=0, !MD Simulation
@@ -263,7 +252,7 @@ Type of Simulation Being Done: Production Run,
   tempi=310.00000, !Initial Temperature
   pres0=1.01300, !Reference Pressure (in units of bars, where 1 bar = 0.987 atm) at which the system is maintained
   get_ipython().system('saltcon=0.2, !Salt concentration')
- ()
+ """)
 
 
 # In[46]:
@@ -279,7 +268,7 @@ equiNPT_prefix = "equi_NPT"
 prod_prefix = "md_NPT"
 runfile = "run.sh"
 
-GPU_CARD_ID ="0"
+GPU_CARD_ID ="1"
 AMBERPATH = "/mnt/Tsunami_HHD/opt/amber20"
 
 RunFile = open(runfile,'w')
@@ -297,7 +286,6 @@ RunFile.writelines("$AMBERPATH/pmemd.cuda_SPFP -O -i " + prod_prefix + ".in -p "
 RunFile.close()
 
 
-# In[ ]:
 
 
 
