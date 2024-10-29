@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from subprocess import Popen, PIPE
 import sys
-import os
 
 def exec_popen(prog_name, args, cwd, env={}):
     popen_obj = Popen(
@@ -18,35 +17,65 @@ def exec_popen(prog_name, args, cwd, env={}):
 
     return [stdout, stderr]
 
+def exec_propka(input_pdb_file, cwd, propka_path="propka31", env={}):
+    args = [propka_path, input_pdb_file, "-q"]
+
+    exec_popen("PROPKA", args, cwd, env=env)
+
+def exec_protonate_pka(
+    input_pdb_file,
+    output_pdb_file,
+    cwd,
+    protonate_pka_script="protonate_pka.py",
+    env={},
+):
+    pka_file = input_pdb_file.split(".")[0] + ".pka"
+
+    args = [protonate_pka_script, pka_file, input_pdb_file, output_pdb_file]
+
+    exec_popen("Protonate pKa Script", args, cwd, env=env)
+
+
+def exec_protonate_pka(
+    input_pdb_file,
+    output_pdb_file,
+    cwd,
+    protonate_pka_script="protonate_pka.py",
+    env={},
+):
+    pka_file = input_pdb_file.split(".")[0] + ".pka"
+
+    args = [protonate_pka_script, pka_file, input_pdb_file, output_pdb_file]
+
+    exec_popen("Protonate pKa Script", args, cwd, env=env)
 
 def exec_build_init_system(
-    input_prot_pdb_file,
+    modified_pdb_file,
     output_in_file,
     output_prmtop_file,
     output_crd_file,
     output_pdb_file,
     output_log_file,
     cwd,
-    tleap_build_script="gen_model.sh",
+    tleap_build_script="tleap_model.sh",
     env={},
 ):
     args = [
-        os.path.join(cwd,tleap_build_script),
-        input_prot_pdb_file,
+        tleap_build_script,
+        modified_pdb_file,
         output_in_file,
         output_prmtop_file,
         output_crd_file,
         output_pdb_file,
     ]
-    
+
     [stdout, stderr] = exec_popen("Build System Script", args, cwd, env=env)
 
     with open(output_log_file, "w") as output_log:
         output_log.write(stdout)
 
-
 def exec_build_final_system(
-    input_prot_pdb_file,
+    modified_pdb_file,
     output_in_file,
     output_prmtop_file,
     output_crd_file,
@@ -59,7 +88,7 @@ def exec_build_final_system(
 ):
     args = [
         tleap_build_script,
-        input_prot_pdb_file,
+        modified_pdb_file,
         output_in_file,
         output_prmtop_file,
         output_crd_file,
@@ -70,7 +99,6 @@ def exec_build_final_system(
 
     exec_popen("Build System Script", args, cwd, env=env)
 
-
 def exec_get_waterions(
     log_file, cwd, get_num_waters_ions_script="get_leaplog_water_ion_numbers.py", env={}
 ):
@@ -78,7 +106,7 @@ def exec_get_waterions(
 
     [stdout, stderr] = exec_popen("Build System Script", args, cwd, env=env)
 
-    [num_waters, num_Na, num_Cl] = [int(x.strip("'(),")) for x in stdout.split()]
+    [num_waters, num_Na, num_Cl] = [int(x) for x in stdout.split()]
 
     return [num_waters, num_Na, num_Cl]
 
@@ -102,25 +130,28 @@ def exec_calc_ions(
 
     [stdout, stderr] = exec_popen("Calc Ions Script", args, cwd, env=env)
 
-    [final_num_Na, final_num_Cl] = [int(x.strip("',()")) for x in stdout.split()]
+    [final_num_Na, final_num_Cl] = [int(x) for x in stdout.split()]
 
     return [final_num_Na, final_num_Cl]
-
-
-def auto_build_system(input_prot_pdb_file, input_lig_pdb_file, ion_concentration=0.15, cwd='.', env={}):
-    prefix = "complex"
+def auto_build_system(input_pdb_file, ion_concentration=0.15, cwd=".", env={}):
+    prefix = input_pdb_file.split(".")[0]
+    modified_pdb_file = prefix + "_propka.pdb"
     init_in_file = prefix + "_init.in"
     init_prmtop_file = prefix + "_init.prmtop"
     init_crd_file = prefix + "_init.crd"
     init_pdb_file = prefix + "_init.pdb"
     init_log_file = prefix + "_init.log"
     final_in_file = prefix + "_final.in"
-    final_prmtop_file = prefix + "_final.prmtop"
-    final_crd_file = prefix + "_final.crd"
-    final_pdb_file = prefix + "_final.pdb"
+    final_prmtop_file = prefix + ".prmtop"
+    final_crd_file = prefix + ".crd"
+    final_pdb_file = prefix + "_solv_ions.pdb"
+
+    exec_propka(input_pdb_file, cwd, env=env)
+
+    exec_protonate_pka(input_pdb_file, modified_pdb_file, cwd, env=env)
 
     exec_build_init_system(
-        input_prot_pdb_file,
+        modified_pdb_file,
         init_in_file,
         init_prmtop_file,
         init_crd_file,
@@ -137,7 +168,7 @@ def auto_build_system(input_prot_pdb_file, input_lig_pdb_file, ion_concentration
     )
 
     exec_build_final_system(
-        input_prot_pdb_file,
+        modified_pdb_file,
         final_in_file,
         final_prmtop_file,
         final_crd_file,
@@ -147,7 +178,6 @@ def auto_build_system(input_prot_pdb_file, input_lig_pdb_file, ion_concentration
         cwd,
         env=env,
     )
-
 
 if __name__ == "__main__":
     input_prot_pdb_file = sys.argv[1]
