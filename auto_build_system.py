@@ -4,9 +4,9 @@ import sys
 
 def exec_popen(prog_name, args, cwd, env={}):
     popen_obj = Popen(
-        args, cwd=cwd, stdout=PIPE, stderr=PIPE, shell=False, env=env, text=True
+    args, cwd=cwd, stdout=PIPE, stderr=PIPE, shell=False, env=env, universal_newlines=True
     )
-
+    
     stdout, stderr = popen_obj.communicate()
 
     if stdout:
@@ -106,7 +106,7 @@ def exec_get_waterions(
 
     [stdout, stderr] = exec_popen("Build System Script", args, cwd, env=env)
 
-    [num_waters, num_Na, num_Cl] = [int(x) for x in stdout.split()]
+    [num_waters, num_Na, num_Cl] = [int(x) for x in re.findall(r'\b\d+\b', stdout)]
 
     return [num_waters, num_Na, num_Cl]
 
@@ -130,7 +130,7 @@ def exec_calc_ions(
 
     [stdout, stderr] = exec_popen("Calc Ions Script", args, cwd, env=env)
 
-    [final_num_Na, final_num_Cl] = [int(x) for x in stdout.split()]
+    [final_num_Na, final_num_Cl] = [int(x) for x in re.findall(r'\b\d+\b', stdout)]
 
     return [final_num_Na, final_num_Cl]
 def auto_build_system(input_pdb_file, ion_concentration=0.15, cwd=".", env={}):
