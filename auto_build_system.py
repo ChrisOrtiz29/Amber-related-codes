@@ -21,7 +21,6 @@ def exec_popen(prog_name, args, cwd, env={}):
 
 def exec_build_init_system(
     input_prot_pdb_file,
-    input_lig_pdb_file,
     output_in_file,
     output_prmtop_file,
     output_crd_file,
@@ -34,7 +33,6 @@ def exec_build_init_system(
     args = [
         os.path.join(cwd,tleap_build_script),
         input_prot_pdb_file,
-	input_lig_pdb_file,
         output_in_file,
         output_prmtop_file,
         output_crd_file,
@@ -49,7 +47,6 @@ def exec_build_init_system(
 
 def exec_build_final_system(
     input_prot_pdb_file,
-    input_lig_pdb_file,
     output_in_file,
     output_prmtop_file,
     output_crd_file,
@@ -63,7 +60,6 @@ def exec_build_final_system(
     args = [
         tleap_build_script,
         input_prot_pdb_file,
-	input_lig_pdb_file,
         output_in_file,
         output_prmtop_file,
         output_crd_file,
@@ -125,7 +121,6 @@ def auto_build_system(input_prot_pdb_file, input_lig_pdb_file, ion_concentration
 
     exec_build_init_system(
         input_prot_pdb_file,
-	input_lig_pdb_file,
         init_in_file,
         init_prmtop_file,
         init_crd_file,
@@ -143,7 +138,6 @@ def auto_build_system(input_prot_pdb_file, input_lig_pdb_file, ion_concentration
 
     exec_build_final_system(
         input_prot_pdb_file,
-	input_lig_pdb_file,
         final_in_file,
         final_prmtop_file,
         final_crd_file,
@@ -157,18 +151,17 @@ def auto_build_system(input_prot_pdb_file, input_lig_pdb_file, ion_concentration
 
 if __name__ == "__main__":
     input_prot_pdb_file = sys.argv[1]
-    input_lig_pdb_file = sys.argv[2]
-    ion_concentration = float(sys.argv[3])
+    ion_concentration = float(sys.argv[2])
     env = {
         'AMBERHOME':"/mnt/Tsunami_HHD/opt/amber20",
         'PATH':os.getcwd()+":/mnt/Tsunami_HHD/opt/amber20/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
         'LD_LIBRARY_PATH':"/mnt/Tsunami_HHD/opt/amber20/lib"
     }
 
-    if len(sys.argv) > 4:
+    if len(sys.argv) > 3:
 
-        for env_var in sys.argv[4:]:
+        for env_var in sys.argv[3:]:
             [var_name, value] = env_var.split("=")
             env[var_name] = value
     
-    auto_build_system(input_prot_pdb_file, input_lig_pdb_file, ion_concentration=0.15, cwd='.', env=env)
+    auto_build_system(input_prot_pdb_file, ion_concentration=0.15, cwd='.', env=env)
