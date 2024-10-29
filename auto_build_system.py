@@ -57,7 +57,7 @@ def exec_build_init_system(
     output_pdb_file,
     output_log_file,
     cwd,
-    tleap_build_script="tleap_model.sh",
+    tleap_build_script="gen_model.sh",
     env={},
 ):
     args = [
