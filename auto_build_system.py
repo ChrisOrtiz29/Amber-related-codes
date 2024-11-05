@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from subprocess import Popen, PIPE
 import sys
+import os
 
 def exec_popen(prog_name, args, cwd, env={}):
     popen_obj = Popen(
