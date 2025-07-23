@@ -20,8 +20,6 @@ with open("min0.in", "w") as file:
   maxcyc=5000, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
   ncyc=2500, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
   cut=10.00000, !Cut Off Distance for Non-Bounded Interactions
-  get_ipython().system('skinnb=4.00000, !Width of the nonbonded "skin". The direct sum nonbonded list is extended to cut + skinnb, and the van der Waals and direct electrostatic interactions are truncated at cut. Default is 2.0 �~E. Use of this parameter is required for energy conservation, and recommended for all PME runs.')
-  ntb=1, !Constant Volume (default when igb and ntp are both 0)
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=1, !Complete Interactions are Calculated
@@ -32,6 +30,7 @@ with open("min0.in", "w") as file:
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="!(@H=|:WAT|@Na+|@Cl-)", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=25.00, !Force Constant for Restraint, kcal/(mol * A^2)
+/
   """)
 
 
@@ -48,8 +47,6 @@ with open("min1.in", "w") as file:
   maxcyc=5000, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
   ncyc=2500, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
   cut=10.00000, !Cut Off Distance for Non-Bounded Interactions
-  get_ipython().system('skinnb=4.00000, !Width of the nonbonded "skin". The direct sum nonbonded list is extended to cut + skinnb, and the van der Waals and direct electrostatic interactions are truncated at cut. Default is 2.0 �~E. Use of this parameter is required for energy conservation, and recommended for all PME runs.')
-  ntb=1, !Constant Volume (default when igb and ntp are both 0)
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=1, !Complete Interactions are Calculated
@@ -60,6 +57,7 @@ with open("min1.in", "w") as file:
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@N,CA,C,O", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=10.00, !Force Constant for Restraint, kcal/(mol * A^2)
+/
 """)
 
 
@@ -76,8 +74,6 @@ with open("min2.in", "w") as file:
   maxcyc=5000, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
   ncyc=2500, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
   cut=10.00000, !Cut Off Distance for Non-Bounded Interactions
-  get_ipython().system('skinnb=4.00000, !Width of the nonbonded "skin". The direct sum nonbonded list is extended to cut + skinnb, and the van der Waals and direct electrostatic interactions are truncated at cut. Default is 2.0 �~E. Use of this parameter is required for energy conservation, and recommended for all PME runs.')
-  ntb=1, !Constant Volume (default when igb and ntp are both 0)
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=1, !Complete Interactions are Calculated
@@ -88,6 +84,7 @@ with open("min2.in", "w") as file:
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@CA", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=5.00, !Force Constant for Restraint, kcal/(mol * A^2)
+/
 """)
 
 #Heating Stage
@@ -104,8 +101,6 @@ with open("heat.in", "w") as file:
   nstlim=5000000, !Number of MD-steps to be performed. Default 1.
   dt=0.00200, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
   cut=10.00000, !Cut Off Distance for Non-Bounded Interactions
-  get_ipython().system('skinnb=4.00000, !Width of the nonbonded "skin". The direct sum nonbonded list is extended to cut + skinnb, and the van der Waals and direct electrostatic interactions are truncated at cut. Default is 2.0 �~E. Use of this parameter is required for energy conservation, and recommended for all PME runs.')
-  ntb=1, !Constant Volume (default when igb and ntp are both 0)
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=2, !Bond Interactions involving H-atoms omitted
@@ -117,10 +112,10 @@ with open("heat.in", "w") as file:
   gamma_ln=2.00000, !Collision Frequency, ps ^ (-1)
   get_ipython().system('temp0=310.00000, !Reference temperature at which the system is to be kept')
   tempi=0.00000, !Initial Temperature
-  get_ipython().system('saltcon=0.2, !Salt concentration')
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@CA", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=5.00, !Force Constant for Restraint, kcal/(mol * A^2)
+/
 """)
 
 
@@ -171,8 +166,6 @@ with open("equi_NVT.in", "w") as file:
   nstlim=5000000, !Number of MD-steps to be performed. Default 1.
   dt=0.00200, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
   cut=10.00000, !Cut Off Distance for Non-Bounded Interactions
-  get_ipython().system('skinnb=4.00000, !Width of the nonbonded "skin". The direct sum nonbonded list is extended to cut + skinnb, and the van der Waals and direct electrostatic interactions are truncated at cut. Default is 2.0 �~E. Use of this parameter is required for energy conservation, and recommended for all PME runs.')
-  ntb=1, !Constant Volume (default when igb and ntp are both 0)
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=2, !Bond Interactions involving H-atoms omitted
@@ -184,10 +177,10 @@ with open("equi_NVT.in", "w") as file:
   gamma_ln=2.00000, !Collision Frequency, ps ^ (-1)
   temp0=310.00000, !Reference temperature at which the system is to be kept
   tempi=310.00000, !Initial Temperature
-  get_ipython().system('saltcon=0.2, !Salt concentration')
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@CA", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=2.00, !Force Constant for Restraint, kcal/(mol * A^2)
+/
  """)
 
 # NPT Equilibration
@@ -204,8 +197,6 @@ with open("equi_NPT.in", "w") as file:
   nstlim=10000000, !Number of MD-steps to be performed. Default 1.
   dt=0.00200, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
   cut=10.00000, !Cut Off Distance for Non-Bounded Interactions
-  get_ipython().system('skinnb=4.00000, !Width of the nonbonded "skin". The direct sum nonbonded list is extended to cut + skinnb, and the van der Waals and direct electrostatic interactions are truncated at cut. Default is 2.0 �~E. Use of this parameter is required for energy conservation, and recommended for all PME runs.')
-  ntb=2, !Constant Pressure (default when igb and ntp are both 0)
   igb=0, !No Generalized Born
   ntp=1, !MD with isotropic position scaling
   ntf=2, !Bond Interactions involving H-atoms omitted
@@ -218,10 +209,10 @@ with open("equi_NPT.in", "w") as file:
   temp0=310.00000, !Reference temperature at which the system is to be kept
   tempi=310.00000, !Initial Temperature
   pres0=1.01300, !Reference Pressure (in units of bars, where 1 bar = 0.987 atm) at which the system is maintained
-  get_ipython().system('saltcon=0.2, !Salt concentration')
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@CA", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=2.00, !Force Constant for Restraint, kcal/(mol * A^2)
+/
 """)
 
 # Production Run
@@ -237,8 +228,6 @@ with open("md_NPT.in", "w") as file:
   nstlim=10000000, !Number of MD-steps to be performed. Default 1.
   dt=0.00200, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
   cut=10.00000, !Cut Off Distance for Non-Bounded Interactions
-  get_ipython().system('skinnb=4.00000, !Width of the nonbonded "skin". The direct sum nonbonded list is extended to cut + skinnb, and the van der Waals and direct electrostatic interactions are truncated at cut. Default is 2.0 �~E. Use of this parameter is required for energy conservation, and recommended for all PME runs.')
-  ntb=2, !Constant Pressure (default when igb and ntp are both 0)
   igb=0, !No Generalized Born
   ntp=1, !MD with isotropic position scaling
   ntf=2, !Bond Interactions involving H-atoms omitted
@@ -251,7 +240,7 @@ with open("md_NPT.in", "w") as file:
   temp0=310.00000, !Reference temperature at which the system is to be kept
   tempi=310.00000, !Initial Temperature
   pres0=1.01300, !Reference Pressure (in units of bars, where 1 bar = 0.987 atm) at which the system is maintained
-  get_ipython().system('saltcon=0.2, !Salt concentration')
+/
  """)
 
 
