@@ -13,7 +13,8 @@ import os, sys
 #Energy Minimization Stage 1
 with open("min0.in", "w") as file:
     file.write(
-"""Type of Simulation Being Done: Energy Minimization, Stage1, RESTRAINING ALL HEAVY ATOMS EXCEPT WATER AND IONS,
+"""
+#Type of Simulation Being Done: Energy Minimization, Stage1, RESTRAINING ALL HEAVY ATOMS EXCEPT WATER AND IONS,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
@@ -40,7 +41,8 @@ with open("min0.in", "w") as file:
 #Energy Minimization Stage 2
 with open("min1.in", "w") as file:
     file.write(
-"""Type of Simulation Being Done: Energy Minimization, Stage2
+"""
+#Type of Simulation Being Done: Energy Minimization, Stage2
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
@@ -67,7 +69,8 @@ with open("min1.in", "w") as file:
 #Energy Minimization Stage 3
 with open("min2.in", "w") as file:
     file.write(
-"""Type of Simulation Being Done: Energy Minimization, Stage3
+"""
+#Type of Simulation Being Done: Energy Minimization, Stage3
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
@@ -91,7 +94,8 @@ with open("min2.in", "w") as file:
 
 with open("heat.in", "w") as file:
     file.write(
-"""Type of Simulation Being Done: Heating,
+"""
+#Type of Simulation Being Done: Heating,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=0, !MD Simulation
@@ -110,8 +114,7 @@ with open("heat.in", "w") as file:
   ntwr=10000, !Every 1000 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntt=3, !Use Langevin Dynamics with the Collision Frequency GAMA given by gamma_ln,
   gamma_ln=2.00000, !Collision Frequency, ps ^ (-1)
-  get_ipython().system('temp0=310.00000, !Reference temperature at which the system is to be kept')
-  tempi=0.00000, !Initial Temperature
+  tempi=50.00000, !Initial Temperature
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask="@CA", !Atoms to be Restrained are specified by a restraintmask
   restraint_wt=5.00, !Force Constant for Restraint, kcal/(mol * A^2)
@@ -156,7 +159,8 @@ os.system(merge_file)
 
 with open("equi_NVT.in", "w") as file:
     file.write(
-"""Type of Simulation Being Done: NVT Equilibration,
+"""
+#Type of Simulation Being Done: NVT Equilibration,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=0, !MD Simulation
@@ -187,7 +191,8 @@ with open("equi_NVT.in", "w") as file:
 
 with open("equi_NPT.in", "w") as file:
     file.write(
-"""Type of Simulation Being Done: NPT Equilibration,
+"""
+#Type of Simulation Being Done: NPT Equilibration,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=0, !MD Simulation
@@ -218,7 +223,8 @@ with open("equi_NPT.in", "w") as file:
 # Production Run
 with open("md_NPT.in", "w") as file:
     file.write(
-"""Type of Simulation Being Done: Production Run,
+"""
+#Type of Simulation Being Done: Production Run,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=0, !MD Simulation
@@ -240,6 +246,7 @@ with open("md_NPT.in", "w") as file:
   temp0=310.00000, !Reference temperature at which the system is to be kept
   tempi=310.00000, !Initial Temperature
   pres0=1.01300, !Reference Pressure (in units of bars, where 1 bar = 0.987 atm) at which the system is maintained
+  barostat=2, !Monte Carlo Barostat
 /
  """)
 
