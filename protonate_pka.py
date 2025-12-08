@@ -64,7 +64,7 @@ SUMMARY OF THIS PREDICTION
         return collections
     data = gen_parse_data(data)
     data = [
-        (x[0].split()[0], int(x[0].split()[1]), x[0].split()[2], float(x[1])) for x in data]
+        (x[0].split()[0], (x[0].split()[1]), x[0].split()[2], float(x[1])) for x in data]
     
     return data
 propka_data = Propka_load_propka(input_pka)
