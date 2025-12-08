@@ -265,7 +265,7 @@ prod_prefix = "md_NPT"
 runfile = "run.sh"
 
 GPU_CARD_ID ="1"
-AMBERPATH = "/mnt/Tsunami_HHD/opt/amber20"
+AMBERPATH = "/mnt/nfs/opt/amber20"
 
 RunFile = open(runfile,'w')
 RunFile.writelines("export CUDA_VISIBLE_DEVICES=" + GPU_CARD_ID + "\n")
