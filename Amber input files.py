@@ -169,8 +169,8 @@ temp_inc  = 5
 init_temp = 50.0
 norm_temp = 310.0
 max_temp  = 320.0
-interval  = (($max_temp-$init_temp)/$temp_inc)+(($max_temp-$norm_temp)/$temp_inc)
-step_inc  = {heating_steps}/${interval}
+interval  = ((max_temp-init_temp)/temp_inc)+((max_temp-norm_temp)/temp_inc)
+step_inc  = {heating_steps}/{interval}
 
 
 heat_in = "heat.in"
