@@ -27,27 +27,27 @@ pressure=1.0123 #units in bar equal to 1 atm
 
 ####################Restraints#######################
 #Energy Minimization stage 1 restraints
-min1_rest=!(@H=|:WAT|@Na+|@Cl-)
+min1_rest="!(@H=|:WAT|@Na+|@Cl-)"
 min1_restf=25.0
 
 #Energy Minimization stage 2 restraints
-min2_rest=@N,CA,C,O
+min2_rest="@N,CA,C,O"
 min2_restf=10.0
 
 #Energy Minimization stage 3 restraints
-min3_rest=@CA
+min3_rest="@CA"
 min3_restf=5.0
 
 #Heating restraints
-heat_rest=@CA
+heat_rest="@CA"
 heat_restf=5.0
 
 #Equilibration NVT restraints
-equiNVT_rest=@CA
+equiNVT_rest="@CA"
 equiNVT_restf=2.0
 
 #Equilibration NPT restraints
-equiNPT_rest=@CA
+equiNPT_rest="@CA"
 equiNPT_restf=2.0
 #####################################################
 
@@ -59,9 +59,9 @@ with open("min0.in", "w") as file:
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
-  maxcyc=${min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
-  ncyc=${min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
-  cut=${cutoff}, !Cut Off Distance for Non-Bounded Interactions
+  maxcyc={min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
+  ncyc={min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
+  cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=1, !Complete Interactions are Calculated
@@ -70,8 +70,8 @@ with open("min0.in", "w") as file:
   ntwx=100, !Every 100 steps, the coordinates will be written to the mdcrd file
   ntwr=100, !Every 100 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntr=1, !Turn ON (Cartesian) Restraints
-  restraintmask="${min1_res}", !Atoms to be Restrained are specified by a restraintmask
-  restraint_wt=${min1_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
+  restraintmask='{min1_res}', !Atoms to be Restrained are specified by a restraintmask
+  restraint_wt={min1_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
 /
   """)
 
@@ -87,9 +87,9 @@ with open("min1.in", "w") as file:
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
-  maxcyc=${min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
-  ncyc=${min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
-  cut=${cutoff}, !Cut Off Distance for Non-Bounded Interactions
+  maxcyc={min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
+  ncyc={min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
+  cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=1, !Complete Interactions are Calculated
@@ -98,8 +98,8 @@ with open("min1.in", "w") as file:
   ntwx=10, !Every 100 steps, the coordinates will be written to the mdcrd file
   ntwr=100, !Every 100 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntr=1, !Turn ON (Cartesian) Restraints
-  restraintmask="${min2_res}", !Atoms to be Restrained are specified by a restraintmask
-  restraint_wt=${min2_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
+  restraintmask='{min2_res}', !Atoms to be Restrained are specified by a restraintmask
+  restraint_wt={min2_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
 /
 """)
 
@@ -115,9 +115,9 @@ with open("min2.in", "w") as file:
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
-  maxcyc=${min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
-  ncyc=${min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
-  cut=${cutoff}, !Cut Off Distance for Non-Bounded Interactions
+  maxcyc={min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
+  ncyc={min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
+  cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=1, !Complete Interactions are Calculated
@@ -126,8 +126,8 @@ with open("min2.in", "w") as file:
   ntwx=10, !Every 100 steps, the coordinates will be written to the mdcrd file
   ntwr=100, !Every 100 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntr=1, !Turn ON (Cartesian) Restraints
-  restraintmask="${min3_res}", !Atoms to be Restrained are specified by a restraintmask
-  restraint_wt=${min3_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
+  restraintmask='{min3_res}', !Atoms to be Restrained are specified by a restraintmask
+  restraint_wt={min3_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
 /
 """)
 
@@ -143,9 +143,9 @@ with open("heat.in", "w") as file:
   irest=0, !Do NOT Restart the Simulation; instead, run as a NEW Simulation
   ig=-1, !Pseudo-random number seed is changed with every run.
   ntx=1, !Coordinates, but no Velocities, will be read. Formatted (ASCII) coordinate file is expected
-  nstlim=${heating_steps}, !Number of MD-steps to be performed. Default 1.
-  dt=${delta_t}, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
-  cut=${cutoff}, !Cut Off Distance for Non-Bounded Interactions
+  nstlim={heating_steps}, !Number of MD-steps to be performed. Default 1.
+  dt={delta_t}, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
+  cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=2, !Bond Interactions involving H-atoms omitted
@@ -157,33 +157,33 @@ with open("heat.in", "w") as file:
   gamma_ln=2.00000, !Collision Frequency, ps ^ (-1)
   tempi=50.00000, !Initial Temperature
   ntr=1, !Turn ON (Cartesian) Restraints
-  restraintmask="${heat_res}", !Atoms to be Restrained are specified by a restraintmask
-  restraint_wt=${heat_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
+  restraintmask='{heat_res}', !Atoms to be Restrained are specified by a restraintmask
+  restraint_wt={heat_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
 /
 """)
 
 
 init_step = 0
-total_step = ${heating_steps}
+total_step = {heating_steps}
 temp_inc  = 5
 init_temp = 50.0
 norm_temp = 310.0
 max_temp  = 320.0
 interval  = (($max_temp-$init_temp)/$temp_inc)+(($max_temp-$norm_temp)/$temp_inc)
-step_inc  = ${heating_steps}/${interval}
+step_inc  = {heating_steps}/${interval}
 
 
 heat_in = "heat.in"
 topfile  = "temp_inc.in"
     
 TempFile = open(topfile, 'w')
-while (init_temp < 320.0):
+while (init_temp < max_temp):
     TempFile.writelines("&wt type='TEMP0', istep1=" + str(init_step) + ", istep2=" + str(init_step+step_inc) + ", value1=" + str(init_temp) + ", value2=" + str(init_temp+5) +", /" + "\n")
     init_step = init_step + step_inc
     init_temp = init_temp + 5
 
-while (max_temp > 310.0):
-    if max_temp == 310.0:
+while (max_temp > norm_temp):
+    if max_temp == norm_temp:
         TempFile.writelines("&wt type='TEMP0', istep1=" + str(init_step) + ", istep2=" + str(total_step) + ", value1=" + str(norm_temp) + ", value2=" + str(norm_temp) +", /" + "\n")
     else:
         TempFile.writelines("&wt type='TEMP0', istep1=" + str(init_step) + ", istep2=" + str(init_step+step_inc) + ", value1=" + str(max_temp) + ", value2=" + str(max_temp-5) +", /" + "\n")
@@ -210,9 +210,9 @@ with open("equi_NVT.in", "w") as file:
   irest=1, !Continue the simulation
   ig=-1, !Pseudo-random number seed is changed with every run.
   ntx=5, !Coordinates and Velocities, will be read. Formatted (ASCII) coordinate file is expected
-  nstlim=${equi_NVT_steps}, !Number of MD-steps to be performed. Default 1.
-  dt=${delta_t}, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
-  cut=${cutoff}, !Cut Off Distance for Non-Bounded Interactions
+  nstlim={equi_NVT_steps}, !Number of MD-steps to be performed. Default 1.
+  dt={delta_t}, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
+  cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
   ntf=2, !Bond Interactions involving H-atoms omitted
@@ -225,8 +225,8 @@ with open("equi_NVT.in", "w") as file:
   temp0=310.00000, !Reference temperature at which the system is to be kept
   tempi=310.00000, !Initial Temperature
   ntr=1, !Turn ON (Cartesian) Restraints
-  restraintmask="${equiNVT_res}", !Atoms to be Restrained are specified by a restraintmask
-  restraint_wt=${equiNVT_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
+  restraintmask='{equiNVT_res}', !Atoms to be Restrained are specified by a restraintmask
+  restraint_wt={equiNVT_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
 /
  """)
 
@@ -242,9 +242,9 @@ with open("equi_NPT.in", "w") as file:
   irest=1, !Continue the simulations
   ig=-1, !Pseudo-random number seed is changed with every run.
   ntx=5, !Coordinates and Velocities will be read; a formatted (ASCII) coordinate file is expected.
-  nstlim=${equi_NPT_steps}, !Number of MD-steps to be performed. Default 1.
-  dt=${delta_t}, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
-  cut=${cutoff}, !Cut Off Distance for Non-Bounded Interactions
+  nstlim={equi_NPT_steps}, !Number of MD-steps to be performed. Default 1.
+  dt={delta_t}, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
+  cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=1, !MD with isotropic position scaling
   ntf=2, !Bond Interactions involving H-atoms omitted
@@ -258,8 +258,8 @@ with open("equi_NPT.in", "w") as file:
   tempi=310.00000, !Initial Temperature
   pres0=1.01300, !Reference Pressure (in units of bars, where 1 bar = 0.987 atm) at which the system is maintained
   ntr=1, !Turn ON (Cartesian) Restraints
-  restraintmask="@${equiNPT_res}", !Atoms to be Restrained are specified by a restraintmask
-  restraint_wt=${equiNPT_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
+  restraintmask='{equiNPT_res}', !Atoms to be Restrained are specified by a restraintmask
+  restraint_wt={equiNPT_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
 /
 """)
 
@@ -274,9 +274,9 @@ with open("md_NPT.in", "w") as file:
   irest=1, !Continue the simulation;
   ig=-1, !Pseudo-random number seed is changed with every run.
   ntx=5, !Coordinates and Velocities will be read; a formatted (ASCII) coordinate file is expected.
-  nstlim=${md_NPT_steps}, !Number of MD-steps to be performed. Default 1.
-  dt=${delta_t}, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
-  cut=${cutoff}, !Cut Off Distance for Non-Bounded Interactions
+  nstlim={md_NPT_steps}, !Number of MD-steps to be performed. Default 1.
+  dt={delta_t}, !The time step (psec). Recommended MAXIMUM is .002 if SHAKE is used, or .001 if SHAKE is NOT used
+  cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=1, !MD with isotropic position scaling
   ntf=2, !Bond Interactions involving H-atoms omitted
