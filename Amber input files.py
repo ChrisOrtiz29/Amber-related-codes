@@ -10,7 +10,7 @@ import os, sys
 # In[ ]:
 ############Step related parameters#################
 #Number of steps per stage
-min_steps_sd-cg=5000
+min_steps_sdcg=5000
 min_steps_sd=2500
 heating_steps=5000000    #1,0000ps or 10ns
 equi_NVT_steps=5000000  #10,000ps or 10ns
