@@ -8,6 +8,13 @@ import os, sys
 
 
 # In[ ]:
+############Input files#############################
+foldername=sys.argv[1] #folder name
+topolfile=sys.argv[2] #.prmtop
+coordfile=sys.argv[3] #.crd file
+resourcetype=sys.argv[4] #gpu:1g.5gb:1
+####################################################
+
 ############Step related parameters#################
 #Number of steps per stage
 min_steps_sdcg=5000
@@ -19,11 +26,12 @@ md_NPT_steps=50000000   #100,000ps or 100ns
 delta_t=0.002 #ps per frame
 #####################################################
 
-###########Non-bonded interaction cutoff#############
+###########Other parameters##########################
 cutoff=10.0 #Angstroms
 itemp=50 #Initial Temperature (K)
 rtemp=310.0  #Reference Temperature (K)
 pressure=1.0123 #units in bar equal to 1 atm
+#####################################################
 
 ####################Restraints#######################
 #Energy Minimization stage 1 restraints
@@ -54,12 +62,12 @@ equiNPT_restf=2.0
 #Energy Minimization Stage 1
 with open("min0.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Energy Minimization, Stage1, RESTRAINING ALL HEAVY ATOMS EXCEPT WATER AND IONS,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
-  maxcyc={min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
+  maxcyc={min_steps_sdcg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
   ncyc={min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
@@ -82,12 +90,12 @@ with open("min0.in", "w") as file:
 #Energy Minimization Stage 2
 with open("min1.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Energy Minimization, Stage2
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
-  maxcyc={min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
+  maxcyc={min_steps_sdcg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
   ncyc={min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
@@ -110,12 +118,12 @@ with open("min1.in", "w") as file:
 #Energy Minimization Stage 3
 with open("min2.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Energy Minimization, Stage3
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
-  maxcyc={min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
+  maxcyc={min_steps_sdcg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
   ncyc={min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
@@ -135,7 +143,7 @@ with open("min2.in", "w") as file:
 
 with open("heat.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Heating,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
@@ -170,7 +178,7 @@ init_temp = 50.0
 norm_temp = 310.0
 max_temp  = 320.0
 interval  = ((max_temp-init_temp)/temp_inc)+((max_temp-norm_temp)/temp_inc)
-step_inc  = {heating_steps}/{interval}
+step_inc  = int(heating_steps/interval)
 
 
 heat_in = "heat.in"
@@ -202,7 +210,7 @@ os.system(merge_file)
 
 with open("equi_NVT.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: NVT Equilibration,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
@@ -234,7 +242,7 @@ with open("equi_NVT.in", "w") as file:
 
 with open("equi_NPT.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: NPT Equilibration,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
@@ -266,7 +274,7 @@ with open("equi_NPT.in", "w") as file:
 # Production Run
 with open("md_NPT.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Production Run,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
