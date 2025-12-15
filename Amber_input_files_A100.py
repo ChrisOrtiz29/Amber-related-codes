@@ -10,7 +10,7 @@ import os, sys
 # In[ ]:
 ############Input files#############################
 foldername=sys.argv[1] #folder name
-topfile=sys.argv[2] #.prmtop
+topolfile=sys.argv[2] #.prmtop
 coordfile=sys.argv[3] #.crd file
 resourcetype=sys.argv[4] #gpu:1g.5gb:1
 ####################################################
@@ -61,12 +61,12 @@ equiNPT_restf=2.0
 #Energy Minimization Stage 1
 with open("min0.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Energy Minimization, Stage1, RESTRAINING ALL HEAVY ATOMS EXCEPT WATER AND IONS,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
-  maxcyc={min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
+  maxcyc={min_steps_sdcg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
   ncyc={min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
@@ -90,12 +90,12 @@ with open("min0.in", "w") as file:
 #Energy Minimization Stage 2
 with open("min1.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Energy Minimization, Stage2
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
-  maxcyc={min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
+  maxcyc={min_steps_sdcg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
   ncyc={min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
@@ -119,12 +119,12 @@ with open("min1.in", "w") as file:
 #Energy Minimization Stage 3
 with open("min2.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Energy Minimization, Stage3
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
-  maxcyc={min_steps_sd-cg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
+  maxcyc={min_steps_sdcg}, !Total Minimization Cycles to be run. Steepest Decent First, then Conjugate Gradient Method if ncyc < maxcyc
   ncyc={min_steps_sd}, !Number of Steepest Decent Minimization Steps to run before switching to Conjugate Gradient
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
@@ -145,7 +145,7 @@ with open("min2.in", "w") as file:
 
 with open("heat.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Heating,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
@@ -181,7 +181,7 @@ init_temp = 50.0
 norm_temp = 310.0
 max_temp  = 320.0
 interval  = ((max_temp-init_temp)/temp_inc)+((max_temp-norm_temp)/temp_inc)
-step_inc  = {heating_steps}/{interval}
+step_inc  = int(heating_steps/interval)
 
 
 heat_in = "heat.in"
@@ -213,7 +213,7 @@ os.system(merge_file)
 
 with open("equi_NVT.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: NVT Equilibration,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
@@ -246,7 +246,7 @@ with open("equi_NVT.in", "w") as file:
 
 with open("equi_NPT.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: NPT Equilibration,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
@@ -279,7 +279,7 @@ with open("equi_NPT.in", "w") as file:
 # Production Run
 with open("md_NPT.in", "w") as file:
     file.write(
-"""
+f"""
 #Type of Simulation Being Done: Production Run,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
@@ -316,19 +316,19 @@ with open("job_submit.sh", "w") as file:
     file.write(
 """
 #!/bin/bash
-#SBATCH --job-name=$foldername
+#SBATCH --job-name={foldername}
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=user@gmail.com
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=20gb
-#SBATCH --gres=$resourcetype
+#SBATCH --gres={resourcetype}
 #SBATCH --output=out.log
 #SBATCH --partition=COMPUTE1Q
 #SBATCH --account=yanglab
 
-topfile=$topfile
-coordfile=$topfile
+topfile={topolfile}
+coordfile={coordfile}
 
 #Energy Minimization
 singularity exec --nv --bind /raid:/raid /raid/images/amber20.sif pmemd.cuda_DPFP -O -i min0.in -p $topfile -c $coordfile -o min0.out -r min0.rst -ref $coordfile -x min0.nc -inf min0.info
