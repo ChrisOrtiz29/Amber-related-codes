@@ -5,65 +5,127 @@
 
 
 import os, sys
+import argparse
+from model_confidence import get_amber_res_blocks
 
 
 # In[ ]:
-############Input files#############################
-foldername=sys.argv[1] #folder name
-topolfile=sys.argv[2] #.prmtop
-coordfile=sys.argv[3] #.crd file
-resourcetype=sys.argv[4] #gpu:1g.5gb:1
-####################################################
+parser = argparse.ArgumentParser(
+    description="""
+Generate Amber input files for AF3 structures.
+Automatically classifies residues by AF3 B-factor confidence
+and applies restraint schemes for minimization, heating,
+equilibration, and production MD.
+""",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+)
 
-############Step related parameters#################
+parser.add_argument(
+    "-n", "--name",
+    required=True,
+    help="Job / folder name"
+)
+
+parser.add_argument(
+    "-p", "--prmtop",
+    required=True,
+    help="Amber topology file (.prmtop)"
+)
+
+parser.add_argument(
+    "-c", "--coord",
+    required=True,
+    help="Amber coordinate file (.crd or .rst7)"
+)
+
+parser.add_argument(
+    "-s", "--structure",
+    required=True,
+    help="AF3 PDB structure used to extract B-factor confidence"
+)
+
+parser.add_argument(
+    "-g", "--gres",
+    required=True,
+    help="GPU resource string (e.g. gpu:1g.5gb:1)"
+)
+
+args = parser.parse_args()
+
+############Input files##################################
+foldername=args.name #folder name 
+topolfile=args.prmtop #.prmtop
+coordfile=args.coord #.crd file
+pdbfile=args.structure #pdb after pdb4amber
+resourcetype=args.gres #gpu:1g.5gb:1
+##########################################################
+
+############Step related parameters#######################
 #Number of steps per stage
 min_steps_sdcg=5000
 min_steps_sd=2500
-heating_steps=5000000    #1,0000ps or 10ns
-equi_NVT_steps=5000000  #10,000ps or 10ns
-equi_NPT_steps=5000000  #10,000ps or 10ns
-md_NPT_steps=50000000   #100,000ps or 100ns
+min_ener_steps=10         #Save energy info every 10 steps
+min_traj_steps=100        #Save snapshot every 100 steps
+min_restart_steps=100   #Save restart file every 100 steps
+############Heating related###############################
+heating_steps=5000000       #1,0000ps or 10ns
+heating_ener_steps=50000    #Save energy info every 100ps
+heating_traj_steps=50000    #Save snapshot every 100ps
+heating_restart_steps=50000 #Save restart file every 100ps
+###########NVT Equilibration related#######################
+equi_NVT_steps=5000000      #10,000ps or 10ns
+equi_NVT_ener_steps=50000   #Save energy info every 100ps
+equi_NVT_traj_steps=50000   #Save snapshot info every 100ps
+equi_NVT_restart_steps=50000 #Save restart file every 100ps
+###########NPT Equilibration related#######################
+equi_NPT_steps=5000000      #10,000ps or 10ns
+equi_NPT_ener_steps=50000   #Save energy info every 100ps
+equi_NPT_traj_steps=50000   #Save snapshot info every 100ps
+equi_NPT_restart_steps=50000 #Save restart file every 100ps
+##########NPT Production related###########################
+md_NPT_steps=50000000      #100,000ps or 100ns
+md_NPT_ener_steps=50000    #Save energy info every 100ps
+md_NPT_traj_steps=50000    #Save snapshot info every 100ps
+md_NPT_restart_steps=50000 #Save restart file every 100ps
+###########################################################
 delta_t=0.002 #ps per frame
-#####################################################
 
-###########Other parameters##########################
+###########Non-bonded interaction cutoff#############
 cutoff=10.0 #Angstroms
 itemp=50 #Initial Temperature (K)
 rtemp=310.0  #Reference Temperature (K)
 pressure=1.0123 #units in bar equal to 1 atm
-#####################################################
 
 ####################Restraints#######################
 #Energy Minimization stage 1 restraints
-min1_rest="!(@H=|:WAT|@Na+|@Cl-)"
-min1_restf=25.0
+min1_res="!(@H=|:WAT|@Na+|@Cl-)"
+min1_resf=25.0
 
 #Energy Minimization stage 2 restraints
-min2_rest="@N,CA,C,O"
-min2_restf=10.0
+min2_res="@N,CA,C,O"
+min2_resf=10.0
 
 #Energy Minimization stage 3 restraints
-min3_rest="@CA"
-min3_restf=5.0
+min3_res="@CA"
+min3_resf=5.0
 
 #Heating restraints
-heat_rest="@CA"
-heat_restf=5.0
+heat_res="@CA"
+heat_resf=5.0
 
 #Equilibration NVT restraints
-equiNVT_rest="@CA"
-equiNVT_restf=2.0
+equiNVT_res="@CA"
+equiNVT_resf=2.0
 
 #Equilibration NPT restraints
-equiNPT_rest="@CA"
-equiNPT_restf=2.0
+equiNPT_res="@CA"
+equiNPT_resf=2.0
 #####################################################
 
 #Energy Minimization Stage 1
 with open("min0.in", "w") as file:
     file.write(
-f"""
-#Type of Simulation Being Done: Energy Minimization, Stage1, RESTRAINING ALL HEAVY ATOMS EXCEPT WATER AND IONS,
+f"""#Type of Simulation Being Done: Energy Minimization, Stage1, RESTRAINING ALL HEAVY ATOMS EXCEPT WATER AND IONS,
  &cntrl
   ntxo=2, IOUTFM=1, !NetCDF Binary Format.
   imin=1, !Energy Minimization
@@ -72,11 +134,12 @@ f"""
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
+  ntb=1, !Constant Volume. (default when igb and ntp are both 0, which are their defaults)
   ntf=1, !Complete Interactions are Calculated
   ntc=1, !SHAKE is NOT performed, DEFAULT
-  ntpr=10, !Every 10 steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
-  ntwx=100, !Every 100 steps, the coordinates will be written to the mdcrd file
-  ntwr=100, !Every 100 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
+  ntpr={min_ener_steps}, !Every {min_ener_steps} steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
+  ntwx={min_traj_steps}, !Every {min_traj_steps} steps, the coordinates will be written to the mdcrd file
+  ntwr={min_restart_steps}, !Every {min_restart_steps} steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask='{min1_res}', !Atoms to be Restrained are specified by a restraintmask
   restraint_wt={min1_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
@@ -100,11 +163,12 @@ f"""
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
+  ntb=1, !Constant Volume. (default when igb and ntp are both 0, which are their defaults)
   ntf=1, !Complete Interactions are Calculated
   ntc=1, !SHAKE is NOT performed, DEFAULT
-  ntpr=10, !Every 10 steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
-  ntwx=10, !Every 100 steps, the coordinates will be written to the mdcrd file
-  ntwr=100, !Every 100 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
+  ntpr={min_ener_steps}, !Every {min_ener_steps} steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
+  ntwx={min_traj_steps}, !Every {min_traj_steps} steps, the coordinates will be written to the mdcrd file
+  ntwr={min_restart_steps}, !Every {min_restart_steps} steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask='{min2_res}', !Atoms to be Restrained are specified by a restraintmask
   restraint_wt={min2_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
@@ -128,11 +192,12 @@ f"""
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
+  ntb=1, !Constant Volume. (default when igb and ntp are both 0, which are their defaults)
   ntf=1, !Complete Interactions are Calculated
   ntc=1, !SHAKE is NOT performed, DEFAULT
-  ntpr=10, !Every 10 steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
-  ntwx=10, !Every 100 steps, the coordinates will be written to the mdcrd file
-  ntwr=100, !Every 100 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
+  ntpr={min_ener_steps}, !Every {min_ener_steps} steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
+  ntwx={min_traj_steps}, !Every {min_traj_steps} steps, the coordinates will be written to the mdcrd file
+  ntwr={min_restart_steps}, !Every {min_restart_steps} steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntr=1, !Turn ON (Cartesian) Restraints
   restraintmask='{min3_res}', !Atoms to be Restrained are specified by a restraintmask
   restraint_wt={min3_resf}, !Force Constant for Restraint, kcal/(mol * A^2)
@@ -156,11 +221,12 @@ f"""
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
+  ntb=1, !Constant Volume. (default when igb and ntp are both 0, which are their defaults)
   ntf=2, !Bond Interactions involving H-atoms omitted
   ntc=2, !Bonds involving Hydrogen are Constrained
-  ntpr=10000, !Every 100 steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
-  ntwx=10000, !Every 100 steps, the coordinates will be written to the mdcrd file
-  ntwr=10000, !Every 1000 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
+  ntpr={heating_ener_steps}, !Every {heating_ener_steps} steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
+  ntwx={heating_traj_steps}, !Every {heating_traj_steps} steps, the coordinates will be written to the mdcrd file
+  ntwr={heating_restart_steps}, !Every {heating_restart_steps} steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntt=3, !Use Langevin Dynamics with the Collision Frequency GAMA given by gamma_ln,
   gamma_ln=2.00000, !Collision Frequency, ps ^ (-1)
   tempi=50.00000, !Initial Temperature
@@ -223,11 +289,12 @@ f"""
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=0, !No pressure scaling (Default)
+  ntb=1, !Constant Volume. (default when igb and ntp are both 0, which are their defaults)
   ntf=2, !Bond Interactions involving H-atoms omitted
   ntc=2, !Bonds involving Hydrogen are Constrained
-  ntpr=10000, !Every 100 steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
-  ntwx=50000, !Every 100 steps, the coordinates will be written to the mdcrd file
-  ntwr=10000, !Every 1000 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
+  ntpr={equi_NVT_ener_steps}, !Every {equi_NVT_ener_steps} steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
+  ntwx={equi_NVT_traj_steps}, !Every {equi_NVT_traj_steps} steps, the coordinates will be written to the mdcrd file
+  ntwr={equi_NVT_restart_steps}, !Every {equi_NVT_restart_steps} steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntt=3, !Use Langevin Dynamics with the Collision Frequency GAMA given by gamma_ln,
   gamma_ln=2.00000, !Collision Frequency, ps ^ (-1)
   temp0=310.00000, !Reference temperature at which the system is to be kept
@@ -255,11 +322,12 @@ f"""
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=1, !MD with isotropic position scaling
+  ntb=2, !Constant Pressure. (default when ntp > 0)
   ntf=2, !Bond Interactions involving H-atoms omitted
   ntc=2, !Bonds involving Hydrogen are Constrained
-  ntpr=1000, !Every 1000 steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
-  ntwx=50000, !Every 10000 steps, the coordinates will be written to the mdcrd file
-  ntwr=10000, !Every 10000 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
+  ntpr={equi_NPT_ener_steps}, !Every {equi_NPT_ener_steps} steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
+  ntwx={equi_NPT_traj_steps}, !Every {equi_NPT_traj_steps} steps, the coordinates will be written to the mdcrd file
+  ntwr={equi_NPT_restart_steps}, !Every {equi_NPT_restart_steps} steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntt=3, !Use Langevin Dynamics with the Collision Frequency GAMA given by gamma_ln,
   gamma_ln=2.00000, !Collision Frequency, ps ^ (-1)
   temp0=310.00000, !Reference temperature at which the system is to be kept
@@ -287,11 +355,12 @@ f"""
   cut={cutoff}, !Cut Off Distance for Non-Bounded Interactions
   igb=0, !No Generalized Born
   ntp=1, !MD with isotropic position scaling
+  ntb=2, !Constant Pressure. (default when ntp > 0)
   ntf=2, !Bond Interactions involving H-atoms omitted
   ntc=2, !Bonds involving Hydrogen are Constrained
-  ntpr=1000, !Every 1000 steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
-  ntwx=50000, !Every 10000 steps, the coordinates will be written to the mdcrd file
-  ntwr=10000, !Every 10000 steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
+  ntpr={md_NPT_ener_steps}, !Every {md_NPT_ener_steps} steps, energy information will be printed in human-readable form to files "mdout" and "mdinfo"
+  ntwx={md_NPT_traj_steps}, !Every {md_NPT_traj_steps} steps, the coordinates will be written to the mdcrd file
+  ntwr={md_NPT_restart_steps}, !Every {md_NPT_restart_steps} steps during dynamics, the restart file will be written, ensuring that recovery from a crash will not be so painful. #If ntwr < 0, a unique copy of the file, "restrt_<nstep>", is written every abs(ntwr) steps
   ntt=3, !Use Langevin Dynamics with the Collision Frequency GAMA given by gamma_ln,
   gamma_ln=2.00000, !Collision Frequency, ps ^ (-1)
   temp0=310.00000, !Reference temperature at which the system is to be kept
@@ -301,13 +370,12 @@ f"""
 /
  """)
 
-
 # In[46]:
 
 
 #Submission File
-topfile = "cmp.parm7"
-coordfile = "cmp.crd"
+topfile={topolfile}
+coordfile={coordfile}
 min_prefix = "min"
 heat_prefix = "heating"
 equiNVT_prefix = "equi_NVT"
