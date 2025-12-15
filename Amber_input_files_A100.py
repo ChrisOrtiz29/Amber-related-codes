@@ -34,28 +34,28 @@ pressure=1.0123 #units in bar equal to 1 atm
 
 ####################Restraints#######################
 #Energy Minimization stage 1 restraints
-min1_rest="!(@H=|:WAT|@Na+|@Cl-)"
-min1_restf=25.0
+min1_res="!(@H=|:WAT|@Na+|@Cl-)"
+min1_resf=25.0
 
 #Energy Minimization stage 2 restraints
-min2_rest="@N,CA,C,O"
-min2_restf=10.0
+min2_res="@N,CA,C,O"
+min2_resf=10.0
 
 #Energy Minimization stage 3 restraints
-min3_rest="@CA"
-min3_restf=5.0
+min3_res="@CA"
+min3_resf=5.0
 
 #Heating restraints
-heat_rest="@CA"
-heat_restf=5.0
+heat_res="@CA"
+heat_resf=5.0
 
 #Equilibration NVT restraints
-equiNVT_rest="@CA"
-equiNVT_restf=2.0
+equiNVT_res="@CA"
+equiNVT_resf=2.0
 
 #Equilibration NPT restraints
-equiNPT_rest="@CA"
-equiNPT_restf=2.0
+equiNPT_res="@CA"
+equiNPT_resf=2.0
 #####################################################
 
 #Energy Minimization Stage 1
