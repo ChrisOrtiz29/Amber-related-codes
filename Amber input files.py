@@ -12,18 +12,9 @@ from model_confidence import get_amber_res_blocks
 # In[ ]:
 parser = argparse.ArgumentParser(
     description="""
-Generate Amber input files for AF3 structures.
-Automatically classifies residues by AF3 B-factor confidence
-and applies restraint schemes for minimization, heating,
-equilibration, and production MD.
+Generate Amber input files.
 """,
     formatter_class=argparse.ArgumentDefaultsHelpFormatter
-)
-
-parser.add_argument(
-    "-n", "--name",
-    required=True,
-    help="Job / folder name"
 )
 
 parser.add_argument(
@@ -38,26 +29,11 @@ parser.add_argument(
     help="Amber coordinate file (.crd or .rst7)"
 )
 
-parser.add_argument(
-    "-s", "--structure",
-    required=True,
-    help="AF3 PDB structure used to extract B-factor confidence"
-)
-
-parser.add_argument(
-    "-g", "--gres",
-    required=True,
-    help="GPU resource string (e.g. gpu:1g.5gb:1)"
-)
-
 args = parser.parse_args()
 
 ############Input files##################################
-foldername=args.name #folder name 
 topolfile=args.prmtop #.prmtop
 coordfile=args.coord #.crd file
-pdbfile=args.structure #pdb after pdb4amber
-resourcetype=args.gres #gpu:1g.5gb:1
 ##########################################################
 
 ############Step related parameters#######################
