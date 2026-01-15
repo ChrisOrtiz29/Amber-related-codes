@@ -7,8 +7,11 @@ output_crd=$4
 output_pdb=$5
 
 cat > ${output_in} << EOF
-source leaprc.gaff
+set default PBRadii mbondi3
+source leaprc.gaff2
 source leaprc.protein.ff14SB
+source leaprc.RNA.OL3
+source leaprc.DNA.OL24
 source leaprc.water.tip3p
 model = loadpdb ${input_prot_pdb}
 solvatebox model TIP3PBOX 10 iso
