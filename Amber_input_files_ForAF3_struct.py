@@ -481,7 +481,7 @@ f"""#Type of Simulation Being Done: Production Run,
 #A100 Submission File
 with open("job_submit.sh", "w") as file:
     file.write(
-"""#!/bin/bash
+f"""#!/bin/bash
 #SBATCH --job-name={foldername}
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=user@gmail.com
