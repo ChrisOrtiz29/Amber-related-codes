@@ -316,10 +316,10 @@ step_inc  = int(heating_steps/interval)
 
 
 heat_in = "heat.in"
-topfile  = "temp_inc.in"
+tempfile  = "temp_inc.in"
 resfile = "heat_res.in"
 
-TempFile = open(topfile, 'w')
+TempFile = open(tempfile, 'w')
 while (init_temp < max_temp):
     TempFile.writelines("&wt type='TEMP0', istep1=" + str(init_step) + ", istep2=" + str(init_step+step_inc) + ", value1=" + str(init_temp) + ", value2=" + str(init_temp+5) +", /" + "\n")
     init_step = init_step + step_inc
@@ -337,7 +337,7 @@ TempFile.writelines("&wt type='END' /")
 TempFile.close()
 
 #merge the heating input file and the step by step temp increment
-merge_file = "cat " + heat_in + " " + topfile + " " + resfile + " > heating.in"
+merge_file = "cat " + heat_in + " " + tempfile + " " + resfile + " > heating.in"
 os.system(merge_file)
 
 
