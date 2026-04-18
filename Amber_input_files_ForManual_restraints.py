@@ -53,6 +53,7 @@ parser.add_argument(
     "--high_res",
     nargs='+',
     type=str,
+    required=True,
     help="High restraint residues (supports ranges like 10-15)"
 )
 
@@ -60,6 +61,7 @@ parser.add_argument(
     "--low_res",
     nargs='+',
     type=str,
+    required=True,
     help="Low restraint residues (supports ranges like 10-15)"
 )
 
